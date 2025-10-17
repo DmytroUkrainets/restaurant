@@ -1,70 +1,73 @@
 package edu.ukma.restaurant.service.impl;
 
-import edu.ukma.restaurant.service.RestaurantService;
-import edu.ukma.restaurant.repository.RestaurantRepository;
-import edu.ukma.restaurant.entity.Restaurant;
+import edu.ukma.restaurant.domain.Restaurant;
+import edu.ukma.restaurant.domain.RestaurantStatus;
 import edu.ukma.restaurant.dto.RestaurantDto;
+import edu.ukma.restaurant.exception.NotFoundException;
 import edu.ukma.restaurant.mapper.RestaurantMapper;
+import edu.ukma.restaurant.repository.RestaurantRepository;
+import edu.ukma.restaurant.service.RestaurantService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class RestaurantServiceImpl implements RestaurantService {
 
-    private final RestaurantRepository restaurantRepository;
-
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository) {
-        this.restaurantRepository = restaurantRepository;
-    }
+    private final RestaurantRepository repository;
+    private final RestaurantMapper mapper;
 
     @Override
     public RestaurantDto create(RestaurantDto dto) {
-        Restaurant r = RestaurantMapper.toEntity(dto);
-        Restaurant saved = restaurantRepository.save(r);
-        return RestaurantMapper.toDto(saved);
+        Restaurant saved = repository.save(mapper.toNewEntity(dto));
+        return mapper.toDto(saved);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public RestaurantDto findById(Long id) {
-        return restaurantRepository.findById(id).map(RestaurantMapper::toDto)
-            .orElseThrow(() -> new NoSuchElementException("Restaurant not found: " + id));
+        Restaurant e = repository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found: id=" + id));
+        return mapper.toDto(e);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RestaurantDto> findAll() {
-        return restaurantRepository.findAll().stream().map(RestaurantMapper::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Override
     public RestaurantDto update(Long id, RestaurantDto dto) {
-        Restaurant r = restaurantRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No restaurant"));
-        r.setName(dto.getName());
-        r.setAddress(dto.getAddress());
-        Restaurant updated = restaurantRepository.save(r);
-        return RestaurantMapper.toDto(updated);
+        Restaurant e = repository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found: id=" + id));
+        mapper.updateEntity(e, dto);
+        return mapper.toDto(e);
     }
 
     @Override
     public void delete(Long id) {
-        restaurantRepository.deleteById(id);
+        if (!repository.existsById(id)) {
+            throw new NotFoundException("Restaurant not found: id=" + id);
+        }
+        repository.deleteById(id);
     }
 
     @Override
     public void openRestaurant(Long id) {
-        Restaurant r = restaurantRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No restaurant"));
-        r.setStatus(Restaurant.Status.OPEN);
-        restaurantRepository.save(r);
+        Restaurant e = repository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found: id=" + id));
+        e.setStatus(RestaurantStatus.OPEN);
     }
 
     @Override
     public void closeRestaurant(Long id) {
-        Restaurant r = restaurantRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No restaurant"));
-        r.setStatus(Restaurant.Status.CLOSED);
-        restaurantRepository.save(r);
+        Restaurant e = repository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Restaurant not found: id=" + id));
+        e.setStatus(RestaurantStatus.CLOSED);
     }
 }
-

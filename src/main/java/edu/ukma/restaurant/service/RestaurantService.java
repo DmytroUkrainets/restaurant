@@ -1,6 +1,7 @@
 package edu.ukma.restaurant.service;
 
 import edu.ukma.restaurant.dto.RestaurantDto;
+
 import java.util.List;
 
 public interface RestaurantService {
@@ -12,4 +13,3 @@ public interface RestaurantService {
     void openRestaurant(Long id);
     void closeRestaurant(Long id);
 }
-

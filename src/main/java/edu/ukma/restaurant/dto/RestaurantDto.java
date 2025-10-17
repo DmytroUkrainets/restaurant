@@ -1,18 +1,28 @@
 package edu.ukma.restaurant.dto;
 
+import edu.ukma.restaurant.domain.RestaurantStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RestaurantDto {
     private Long id;
+
+    @NotBlank
+    @Size(max = 255)
     private String name;
+
+    @NotBlank
+    @Size(max = 255)
     private String address;
-    private String status;
 
-    public Long getId(){return id;}
-    public void setId(Long id){this.id=id;}
-    public String getName(){return name;}
-    public void setName(String name){this.name=name;}
-    public String getAddress(){return address;}
-    public void setAddress(String address){this.address=address;}
-    public String getStatus(){return status;}
-    public void setStatus(String status){this.status=status;}
+    @Size(max = 32)
+    private String phone;
+
+    private RestaurantStatus status;
 }
-

@@ -1,30 +1,37 @@
 package edu.ukma.restaurant.mapper;
 
-import edu.ukma.restaurant.entity.Restaurant;
+import edu.ukma.restaurant.domain.Restaurant;
+import edu.ukma.restaurant.domain.RestaurantStatus;
 import edu.ukma.restaurant.dto.RestaurantDto;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RestaurantMapper {
-    public static RestaurantDto toDto(Restaurant r){
-        if(r==null) return null;
-        RestaurantDto d = new RestaurantDto();
-        d.setId(r.getId());
-        d.setName(r.getName());
-        d.setAddress(r.getAddress());
-        d.setStatus(r.getStatus() != null ? r.getStatus().name() : null);
-        return d;
+    public RestaurantDto toDto(Restaurant e) {
+        if (e == null) return null;
+        return RestaurantDto.builder()
+            .id(e.getId())
+            .name(e.getName())
+            .address(e.getAddress())
+            .phone(e.getPhone())
+            .status(e.getStatus())
+            .build();
     }
 
-    public static Restaurant toEntity(RestaurantDto d) {
-        if(d==null) return null;
-        Restaurant r = new Restaurant();
-        r.setName(d.getName());
-        r.setAddress(d.getAddress());
-        if(d.getStatus()!=null){
-            try {
-                r.setStatus(Restaurant.Status.valueOf(d.getStatus()));
-            } catch(Exception e){}
-        }
-        return r;
+    public void updateEntity(Restaurant e, RestaurantDto d) {
+        if (d.getName() != null) e.setName(d.getName());
+        if (d.getAddress() != null) e.setAddress(d.getAddress());
+        if (d.getPhone() != null) e.setPhone(d.getPhone());
+        if (d.getStatus() != null) e.setStatus(d.getStatus());
+    }
+
+    public Restaurant toNewEntity(RestaurantDto d) {
+        RestaurantStatus st = d.getStatus() != null ? d.getStatus() : RestaurantStatus.CLOSED;
+        return Restaurant.builder()
+            .name(d.getName())
+            .address(d.getAddress())
+            .phone(d.getPhone())
+            .status(st)
+            .build();
     }
 }
-
