@@ -1,7 +1,5 @@
 package edu.ukma.restaurant.security;
 
-
-
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +41,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             } catch (Exception ex) {
-                // токен невалидный — просто продолжаем без аутентификации
             }
         }
         filterChain.doFilter(request, response);

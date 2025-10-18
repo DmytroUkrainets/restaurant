@@ -1,7 +1,7 @@
 package edu.ukma.restaurant.auth;
 
-import com.example.restaurant.dto.UserDto;
-import com.example.restaurant.service.UserService;
+import edu.ukma.restaurant.dto.UserDto;
+import edu.ukma.restaurant.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

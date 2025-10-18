@@ -19,3 +19,8 @@ spring:
 logging:
   level:
     org.hibernate.SQL: INFO
+
+app:
+  jwt:
+    secret: very-secret-for-dev
+    ttlMinutes: 1440
